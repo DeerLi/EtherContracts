@@ -26,7 +26,24 @@ truffle compile
 ```
 
 
+## Deploy and test the project
+
+1. Run a test local blockchain network by `TestRPC`
+```
+testrpc -a 10 --debug
+```
+
+2. Change the deploy javascript file: 
+```js
+
+```
 
 
+3. deploy the contract
+```
+truffle migrate --reset
+truffle console
+```
 
+ 
 
