@@ -3,10 +3,12 @@ This is a Ethereum smart contracts test project. In this project we build some s
 
 # Development Tools
 
-We use [Truffle](https://github.com/trufflesuit/truffle) and [TestRPC](https://github.com/ethereumjs/testrpc) as the compile tools. In Ubuntu environment, install the tools using the following commands:
+We use [Truffle](https://github.com/trufflesuit/truffle) and [TestRPC](https://github.com/ethereumjs/testrpc) as the compile tools.
+`zeppelin-solidity` is a library of writing Ethereum SmartContracts.
+In Ubuntu environment, install the tools using the following commands:
 
 ```
-npm install -g ethereumjs-testrpc truffle
+npm install -g ethereumjs-testrpc truffle zeppelin-solidity
 ```
 
 # Compile and Test the contract
