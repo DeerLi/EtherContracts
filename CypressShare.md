@@ -11,3 +11,30 @@ which will transfer a certain amount of Ether to each member's account. Member's
 in the main contract and the member's token share.
 
 ## Cypress Organization Contract
+
+Cypress Organization has an owner. The `owner` is the creator of the contract. When created the owner automatically takes
+all the tokens with him. Everytime a member registered by the owner, the owner transfer a certain amount of his token to
+ the newly registered member. The owner can transfer the ownership to another account.
+ 
+
+### Create organization contract
+
+TBD
+
+
+### Transfer Ownership
+
+TBD
+
+### Transfer Ownership
+
+TBD
+
+### Kill the organization
+
+TBD
+
+##
+
+
+
