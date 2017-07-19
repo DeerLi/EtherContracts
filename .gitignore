@@ -1,4 +1,14 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
 node_modules/
-
+/build/
+/migrations/
+/contracts/HelloWorld.sol
+/contracts/MetaCoin.sol
+/contracts/ConvertLib.sol
+/contracts/Migrations.sol
+/test/metacoin.js
+/test/TestMetacoin.sol
+contracts/Shareholder.sol
+package-lock.json
+truffle.js
