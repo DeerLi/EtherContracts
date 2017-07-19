@@ -5,7 +5,8 @@ contract Owned {
   address public owner;
 
   modifier onlyOwner() {
-    require(msg.sender == owner;)
+    require(msg.sender == owner);
+    _;
   }
 
   function Owned(){
@@ -26,11 +27,12 @@ contract Owned {
 contract CypressOrganization is Owned {
 
     address owner;  // Organization owner
+    uint public creationTime; // The contract organization creation time.
     uint public balancesOfEther; // balances of ether received
     uint public totalTokens; // Total supply of Tokens
 
     struct Member {
-      byte32 name;
+      bytes32 name;
       uint   token;
       address account;
     }
@@ -41,7 +43,15 @@ contract CypressOrganization is Owned {
     Member[] members;   // Organization members
     uint totalMembers;  //total number of members
 
-    function CypressOrganization(byte32, _name, uint _amount) onlyOwner {
+
+    /// Guard the transition after a specific time
+    modifier onlyAfter(uint _time) {
+        require(now >= _time);
+        _;
+    }
+
+
+    function CypressOrganization(bytes32 _name, uint _amount) onlyOwner payable {
         require(_amount > 100);
         totalTokens = _amount;  // initialize the total amount of tokens (shares)
         balancesOfEther = msg.value;    // the contract Ether balance
@@ -53,16 +63,18 @@ contract CypressOrganization is Owned {
         }));
         registered[owner] = true;
         totalMembers = 1;
-
+        creationTime = now;
     }
 
     ///
-    function isRegistered(address _account) returns (bool yes) {
-
+    function isRegistered(address _account) constant returns (bool yes) {
+//        if (registered[_account].length == 0) return false;
+        return registered[_account];
     }
 
+
     /// Get the contract account Ether balance
-    function getBalances() const returns(uint balance) {
+    function getBalances() constant returns(uint balance) {
         return balancesOfEther;
     }
 
