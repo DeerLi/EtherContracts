@@ -27,9 +27,7 @@ import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
 contract CypressOrganization is Ownable {
 
-    address owner;  // Organization owner
     uint public creationTime; // The contract organization creation time.
-    uint public balancesOfEther; // balances of ether received
     uint public totalTokens; // Total supply of Tokens
 
     struct Member {
@@ -42,8 +40,6 @@ contract CypressOrganization is Ownable {
     mapping(address => bool) registered;
 
     Member[] members;   // Organization members
-    uint totalMembers;  //total number of members
-
 
     /// Guard the transition after a specific time
     modifier onlyAfter(uint _time) {
@@ -55,28 +51,21 @@ contract CypressOrganization is Ownable {
     function CypressOrganization(bytes _name, uint _amount) onlyOwner payable {
         require(_amount > 100);
         totalTokens = _amount;  // initialize the total amount of tokens (shares)
-        balancesOfEther = msg.value;    // the contract Ether balance
         owner = msg.sender;
         members.push(Member({
             name: _name,
-            account: owner,
-            token: _amount
-        }));
+            token: _amount,
+            account: owner
+            }
+        ));
         registered[owner] = true;
-        totalMembers = 1;
         creationTime = now;
     }
 
-    ///
+    /// check if the account is registered.
     function isRegistered(address _account) constant returns (bool yes) {
 //        if (registered[_account].length == 0) return false;
         return registered[_account];
-    }
-
-
-    /// Get the contract account Ether balance
-    function getBalances() constant returns(uint balance) {
-        return balancesOfEther;
     }
 
     /// Register a member, assign tokens to him.
@@ -94,16 +83,22 @@ contract CypressOrganization is Ownable {
         members.push(Member({name: _name, token: _token, account: _member}));
         members[0].token -= _token;
 
-        totalMembers += 1;
-
         registered[_member] = true;
         return true;
     }
 
-    /// Distribute Ether balance to all the members in the Organization
-    function distributeEther() onlyOwner returns (bool success){
-      // TODO:
-
+    /// Distribute Ether balance to all the members in the Organization.
+    function distributeEther() onlyOwner payable returns (bool success){
+      // check the Ether balance. If the balance >= 100 finney (0.1 ether), then distribute
+        if (this.balance < 100 finney) { // balance is too small for distribution.
+            return false;
+        } else {
+            uint sharePerToken = this.balance / totalTokens;
+            for (var i = 0; i < members.length; i++) {
+                members[i].account.transfer(sharePerToken * members[i].token);      // send the Ether share to the member
+            }
+        }
         return true;
     }
 }
+
