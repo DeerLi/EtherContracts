@@ -1,30 +1,31 @@
 pragma solidity ^0.4.11;
 
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-contract Owned {
-  address public owner;
+//contract Owned {
+//  address public owner;
+//
+//  modifier onlyOwner() {
+//    require(msg.sender == owner);
+//    _;
+//  }
+//
+//  function Owned(){
+//    owner = msg.sender;
+//  }
+//
+//  function changeOwnship(address _to) onlyOwner {
+//    require(_to != 0x0);
+//    owner = _to;
+//  }
+//
+//  function kill() onlyOwner {
+//    selfdestruct(owner);
+//  }
+//}
 
-  modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
-  }
 
-  function Owned(){
-    owner = msg.sender;
-  }
-
-  function changeOwnship(address _to) onlyOwner {
-    require(_to != 0x0);
-    owner = _to;
-  }
-
-  function kill() onlyOwner {
-    selfdestruct(owner);
-  }
-}
-
-
-contract CypressOrganization is Owned {
+contract CypressOrganization is Ownable {
 
     address owner;  // Organization owner
     uint public creationTime; // The contract organization creation time.
@@ -32,7 +33,7 @@ contract CypressOrganization is Owned {
     uint public totalTokens; // Total supply of Tokens
 
     struct Member {
-      bytes32 name;
+      bytes name;
       uint   token;
       address account;
     }
@@ -51,7 +52,7 @@ contract CypressOrganization is Owned {
     }
 
 
-    function CypressOrganization(bytes32 _name, uint _amount) onlyOwner payable {
+    function CypressOrganization(bytes _name, uint _amount) onlyOwner payable {
         require(_amount > 100);
         totalTokens = _amount;  // initialize the total amount of tokens (shares)
         balancesOfEther = msg.value;    // the contract Ether balance
@@ -79,13 +80,23 @@ contract CypressOrganization is Owned {
     }
 
     /// Register a member, assign tokens to him.
-    function registerMember(address _member, uint _token)
+    function registerMember(address _member, bytes _name, uint _token)
       onlyOwner
       returns (bool success) {
+        // validate the input parameter
         require(_member != 0x0 && _token > 0);
+        // check if the member is already registered
+        require(!isRegistered(_member));
 
+        // check if there is enough tokens to assign to the member.
+        require(members[0].token > _token);
 
+        members.push(Member({name: _name, token: _token, account: _member}));
+        members[0].token -= _token;
 
+        totalMembers += 1;
+
+        registered[_member] = true;
         return true;
     }
 
