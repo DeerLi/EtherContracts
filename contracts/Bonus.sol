@@ -1,8 +1,8 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.11;
 
-import SafeMath from './zeppelin-solidity/contracts/safeMath.sol';
-import Ownable from '/zeppelin-solidity/contracts/ownership/Ownable.sol';
-import PullPayment from './zeppelin-solidity/contracts/payment/PullPayment.sol';
+import {SafeMath} from './zeppelin-solidity/contracts/math/SafeMath.sol';
+import {Ownable} from './zeppelin-solidity/contracts/ownership/Ownable.sol';
+import {PullPayment} from './zeppelin-solidity/contracts/payment/PullPayment.sol';
 
 
 /**
@@ -14,18 +14,26 @@ contract Bonus is PullPayment, Ownable {
 
     mapping(address => uint256) public bonus;
 
-    uint public totalToken;
+    uint public totalTokens;
     uint remainingTokens;
-    uint public payTime;
     uint weiPerToken;
+    uint public effectiveAfter;
+
+    modifier onlyAfter() {
+      require(effectiveAfter < now);
+      _;
+    }
 
     function Bonus(uint _totalToken, uint _payTime){
         require(_totalToken > 0);
         totalTokens = _totalToken;
         remainingTokens = _totalToken;
-        payTime = _payTime;
+        effectiveAfter = _payTime;
         weiPerToken = this.balance / _totalToken;
     }
+
+    // Fallback function, it allows others send ether to this contract
+    function () payable {}
 
     function register(address _member, uint _token)
         onlyOwner
@@ -41,16 +49,15 @@ contract Bonus is PullPayment, Ownable {
      *  only after a specific time.
      */
     function claimBonus()
-        onlyAfter
+        //onlyAfter
     {
         address _member = msg.sender;
 
         require(bonus[_member] != 0 && this.balance > 0);
 
-        payment = weiPerToken * bonus[_member];
-        bonus[_member] = 0;
+        uint payment = weiPerToken * bonus[_member];
+        bonus[_member] = 0;   // the payment has been claimed, reset the value to 0
 
-        assert(_member.send(payments));
+        assert(_member.send(payment));
     }
-
 }
